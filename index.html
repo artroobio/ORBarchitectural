@@ -1167,6 +1167,7 @@
       const [loaded, setLoaded] = useState(false);
       const [domLoaded, setDomLoaded] = useState(false); // Fix A: Loader Logic
       const [menuOpen, setMenuOpen] = useState(false);
+      const [orbVisible, setOrbVisible] = useState(false); // New state for sequential animation
       const orbGroupRef = useRef();
       const { progress } = useProgress();
 
@@ -1196,6 +1197,17 @@
            }, 1300);
         }
       }, [progress, domLoaded]);
+
+      // Handle the sequence: Background -> Orb
+      useEffect(() => {
+        if (loaded) {
+            // Wait 1.5 seconds (duration of background fade-in) before showing Orb
+            const timer = setTimeout(() => {
+                setOrbVisible(true);
+            }, 1500);
+            return () => clearTimeout(timer);
+        }
+      }, [loaded]);
 
       useLayoutEffect(() => {
         if (loaded) {
@@ -1269,7 +1281,7 @@
             <React.Suspense fallback={null}>
               <Background menuOpen={menuOpen} loaded={loaded} />
               <group ref={orbGroupRef} position={[3.5, 0, 0]}>
-                <Paperweight loaded={loaded} menuOpen={menuOpen} />
+                <Paperweight loaded={orbVisible} menuOpen={menuOpen} />
               </group>
             </React.Suspense>
           </Canvas>
