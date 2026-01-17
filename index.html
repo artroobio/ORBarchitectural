@@ -1267,7 +1267,7 @@
             <spotLight position={[10, 10, 10]} intensity={2} angle={0.2} penumbra={1} color="white" />
             <spotLight position={[-10, 10, -5]} intensity={2} angle={0.2} penumbra={1} color="white" />
             <React.Suspense fallback={null}>
-              <Background menuOpen={menuOpen} />
+              <Background menuOpen={menuOpen} loaded={loaded} />
               <group ref={orbGroupRef} position={[3.5, 0, 0]}>
                 <Paperweight loaded={loaded} menuOpen={menuOpen} />
               </group>
@@ -1319,7 +1319,7 @@
       );
     }
 
-    function Background({ menuOpen }) {
+    function Background({ menuOpen, loaded }) {
       const { viewport, camera } = useThree();
       const texture = useVideoTexture(BG_VIDEO_URL, {
         unsuspend: 'canplay',
@@ -1348,7 +1348,7 @@
       }
 
       useEffect(() => {
-        if (meshRef.current) {
+        if (meshRef.current && loaded) {
           gsap.to(meshRef.current.material, {
             opacity: menuOpen ? 0.3 : 1,
             duration: 1.5,
@@ -1361,12 +1361,12 @@
             ease: "power2.inOut"
           });
         }
-      }, [menuOpen, scaleX, scaleY]);
+      }, [menuOpen, scaleX, scaleY, loaded]);
 
       return (
         <mesh ref={meshRef} position={[0, 0, -10]} scale={[scaleX, scaleY, 1]}>
           <planeGeometry />
-          <meshBasicMaterial map={texture} toneMapped={false} transparent={true} />
+          <meshBasicMaterial map={texture} toneMapped={false} transparent={true} opacity={0} />
         </mesh>
       )
     }
