@@ -13,6 +13,8 @@
   <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- LENIS (Smooth Scroll) -->
+  <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
   
   <!-- TAILWIND (For Philosophy Section) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -59,6 +61,13 @@
       overflow-x: hidden; 
       background: #f2f2f2; 
     }
+
+    /* LENIS RECOMMENDED STYLES */
+    html.lenis { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+    .lenis.lenis-scrolling iframe { pointer-events: none; }
 
     /* --- REACT HERO STYLES --- */
     #root { 
@@ -288,21 +297,22 @@
     .pos-tr { top: 12%; right: 8%; text-align: right; }
     .pos-bl { bottom: 12%; left: 8%; text-align: left; }
 
-    /* --- PROCESS SECTION STYLES (STATIC) --- */
+    /* --- PROCESS SECTION STYLES --- */
     #process-section-root {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url('https://assets.zyrosite.com/AGBzPMBJDQiwDGny/office-APoihTZDRsIY69FW.png');
+        background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://assets.zyrosite.com/AGBzPMBJDQiwDGny/office-APoihTZDRsIY69FW.png');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
         background-color: #1A1A1A;
         overflow: hidden;
         position: relative;
+        min-height: 100vh;
     }
 
     .horizontal-container {
         display: flex;
         height: 100vh;
-        width: 360vw; /* 4 panels * 90vw */
+        width: 360vw; 
         will-change: transform;
     }
 
@@ -315,7 +325,7 @@
         align-items: center;
         justify-content: center;
         padding: 0 4%;
-        overflow: hidden;
+        overflow: hidden; 
         background: transparent;
     }
 
@@ -329,7 +339,6 @@
         pointer-events: none;
     }
 
-    /* Glass Annotation Card Override */
     .glass-annotation {
         background: rgba(255, 255, 255, 0.6);
         backdrop-filter: blur(20px);
@@ -347,66 +356,20 @@
         position: relative;
         width: 100%;
         height: 55vh;
-        overflow: visible;
-        border-radius: 2px;
-        perspective: 2000px;
+        overflow: hidden; 
+        border-radius: 4px;
+        perspective: 1000px; 
+        background-color: rgba(255,255,255,0.05); 
+        border: 1px solid rgba(255,255,255,0.1);
     }
 
     .main-process-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
-        border-radius: 2px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-    }
-
-    /* 3D POP OUT GALLERY STYLES */
-    .pop-out-gallery {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: auto;
-        transform-style: preserve-3d;
-        z-index: 20;
-    }
-
-    .gallery-pane {
-        position: absolute;
-        width: 220px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 6px;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateZ(-200px);
-        box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-        cursor: zoom-in;
-        transition: box-shadow 0.3s ease, border-color 0.3s ease;
-        will-change: transform, opacity;
-    }
-
-    .gallery-pane.focused {
-        cursor: zoom-out;
-        z-index: 100 !important;
-        border-color: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 50px 100px rgba(0,0,0,0.6);
-    }
-
-    .gallery-pane img, .gallery-pane video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.9;
-        transition: opacity 0.3s ease;
-    }
-
-    .gallery-pane:hover img, .gallery-pane:hover video {
-        opacity: 1;
+        border-radius: 4px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        display: block;
     }
 
     .progress-track {
@@ -436,6 +399,7 @@
         top: 8%;
         right: 5%;
         z-index: 0;
+        pointer-events: none;
     }
 
     /* --- ARCHIVE GRID STYLES (STATIC) --- */
@@ -683,55 +647,39 @@
   <!-- PART 4: PROCESS SECTION (Pure HTML) -->
   <div id="process-section-root">
     <div class="bg-grid"></div>
-    <div class="progress-track"><div class="progress-bar" id="process-progress"></div></div>
+
+    <div class="progress-track">
+        <div class="progress-bar" id="process-progress"></div>
+    </div>
     
     <div class="horizontal-container" id="horizontal-container">
-        <!-- PANEL 01 -->
+        
+        <!-- PANEL 01: THE SKETCH -->
         <section class="process-panel" id="panel-01">
             <span class="panel-number">01</span>
             <div class="flex flex-col md:flex-row items-center gap-10 lg:gap-24 z-10 w-full max-w-7xl mx-auto">
                 <div class="w-full md:w-1/2">
-                    <div class="process-image-wrap group" id="trigger-01">
-                        <div class="pop-out-gallery" id="gallery-01">
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="1"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="2"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="3"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="4"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="5"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="6"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="7"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="8"></div>
-                        </div>
-                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="Sketch" class="main-process-img" id="img-01">
+                    <div class="process-image-wrap group interactive-card">
+                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="Sketch" class="main-process-img">
                     </div>
                 </div>
                 <div class="w-full md:w-1/2">
                     <span class="block font-sans font-semibold text-[10px] tracking-[0.6em] uppercase mb-6 text-white/60">The Genesis</span>
                     <h2 class="font-serif text-5xl lg:text-7xl xl:text-8xl tracking-tighter mb-8 text-white" id="title-1">Raw <i class="italic font-light">Sketch</i>.</h2>
                     <div class="glass-annotation annotation-1">
-                        <p class="text-xs lg:text-sm font-light leading-relaxed text-obsidian text-left">Every structure begins with a gesture. Hover to explore our structural iterations through the lens of early drafts.</p>
+                        <p class="text-xs lg:text-sm font-light leading-relaxed text-obsidian text-left">Every structure begins with a gesture. Initial drafts capture the raw energy and potential of the space.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PANEL 02 -->
+        <!-- PANEL 02: THE WIREFRAME -->
         <section class="process-panel" id="panel-02">
             <span class="panel-number">02</span>
             <div class="flex flex-col md:flex-row-reverse items-center gap-10 lg:gap-24 z-10 w-full max-w-7xl mx-auto">
                 <div class="w-full md:w-1/2">
-                    <div class="process-image-wrap group" id="trigger-02">
-                        <div class="pop-out-gallery" id="gallery-02">
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="1"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="2"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="3"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="4"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="5"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="6"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="7"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="8"></div>
-                        </div>
-                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="Wireframe" class="main-process-img" id="img-02">
+                    <div class="process-image-wrap group interactive-card">
+                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="Wireframe" class="main-process-img">
                     </div>
                 </div>
                 <div class="w-full md:w-1/2 text-left md:text-right">
@@ -744,53 +692,33 @@
             </div>
         </section>
 
-        <!-- PANEL 03 -->
+        <!-- PANEL 03: THE MATERIAL -->
         <section class="process-panel" id="panel-03">
             <span class="panel-number">03</span>
             <div class="flex flex-col md:flex-row items-center gap-10 lg:gap-24 z-10 w-full max-w-7xl mx-auto">
                 <div class="w-full md:w-1/2">
-                    <div class="process-image-wrap group" id="trigger-03">
-                        <div class="pop-out-gallery" id="gallery-03">
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="1"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="2"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="3"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="4"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="5"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/shot-panoramic-composition-library-vfOqabRkgVEFwqi9.jpg" alt="6"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="7"></div>
-                            <div class="gallery-pane"><img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/modern-office-space-with-futuristic-decor-furniture-tWDr3G3kPWyBeBbj.jpg" alt="8"></div>
-                        </div>
-                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="Material" class="main-process-img" id="img-03">
+                    <div class="process-image-wrap group interactive-card">
+                        <img src="https://assets.zyrosite.com/A3QlOV94WLSaL6xE/hold9998_cobden-st_in12_double-height-penthouse-void-tastTN8YGC6w7PC2.jpg" alt="Material" class="main-process-img">
                     </div>
                 </div>
                 <div class="w-full md:w-1/2">
                     <span class="block font-sans font-semibold text-[10px] tracking-[0.6em] uppercase mb-6 text-white/60">Selection</span>
                     <h2 class="font-serif text-5xl lg:text-7xl xl:text-8xl tracking-tighter mb-8 text-white" id="title-3">Solid <i class="italic font-light">Glass</i>.</h2>
                     <div class="glass-annotation annotation-3">
-                        <p class="text-xs lg:text-sm font-light leading-relaxed text-obsidian text-left">We curate high-iron glass and obsidian-grade steel. Hover to see the tactile journey of material selection.</p>
+                        <p class="text-xs lg:text-sm font-light leading-relaxed text-obsidian text-left">We curate high-iron glass and obsidian-grade steel. The tactile journey of material selection is rigorous and precise.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PANEL 04 -->
+        <!-- PANEL 04: THE STRUCTURE -->
         <section class="process-panel" id="panel-04">
             <span class="panel-number" style="color: rgba(255,255,255,0.05)">04</span>
             <div class="flex flex-col md:flex-row-reverse items-center gap-10 lg:gap-24 z-10 w-full max-w-7xl mx-auto">
                 <div class="w-full md:w-1/2">
-                    <div class="process-image-wrap group" id="trigger-04">
-                        <div class="pop-out-gallery" id="gallery-04">
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                            <div class="gallery-pane"><video src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" autoplay muted loop playsinline></video></div>
-                        </div>
-                        <div class="main-process-img border border-white/10 overflow-hidden" id="img-04">
-                            <video class="w-full h-full object-cover" autoplay muted loop playsinline>
+                    <div class="process-image-wrap group interactive-card">
+                        <div class="w-full h-full bg-black/50">
+                            <video class="w-full h-full object-cover" autoplay muted loop playsinline poster="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4">
                                 <source src="https://assets.zyrosite.com/AGBzPMBJDQiwDGny/grey-home-interior-design-video-M13Xi8TTbaVTMRqP.mp4" type="video/mp4">
                             </video>
                         </div>
@@ -845,6 +773,27 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. INITIALIZE LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        // Integrate Lenis with GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000); 
+        });
+
+        gsap.ticker.lagSmoothing(0);
 
         // --- HELPER: Wrap Words ---
         function wrapWords(elementId) {
@@ -970,7 +919,8 @@
                 scrollTrigger: {
                     trigger: "#process-section-root",
                     pin: true,
-                    scrub: 0.8, 
+                    scrub: true, 
+                    invalidateOnRefresh: true,
                     start: "top top",
                     end: () => "+=" + (container.scrollWidth), 
                     onUpdate: (self) => {
@@ -985,77 +935,51 @@
                 const imageWrap = panel.querySelector(".process-image-wrap");
                 const isOddPanel = i % 2 !== 0;
 
+                // Adjust trigger for first panel so it shows immediately
+                const startTrigger = (i === 0) ? "left 120%" : "left 65%";
+
                 const panelTl = gsap.timeline({
                     scrollTrigger: {
                         trigger: panel,
                         containerAnimation: scrollTween,
-                        start: "left 90%",
-                        end: "right center",
-                        toggleActions: "play reverse play reverse",
+                        start: startTrigger, 
+                        toggleActions: "play none none reverse"
                     }
                 });
 
-                panelTl.fromTo(titleWords, 
-                    { opacity: 0, y: 30, filter: "blur(15px)" }, 
-                    { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, stagger: 0.05, ease: "power4.out" }
-                )
+                panelTl.fromTo(titleWords, { opacity: 0, y: 30, filter: "blur(15px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, stagger: 0.05, ease: "power4.out" })
                 .fromTo(annotation, { opacity: 0, x: isOddPanel ? -60 : 60, y: 10 }, { opacity: 1, x: 0, y: 0, duration: 1.2, ease: "power3.out" }, "-=0.6" )
                 .fromTo(imageWrap, { scale: 1.1, opacity: 0, x: isOddPanel ? 50 : -50 }, { scale: 1, opacity: 1, x: 0, duration: 1.5, ease: "expo.out" }, "-=1.2");
+                
+                // Tilt Effect
+                const img = imageWrap.querySelector('img, video');
+                if(img) {
+                    panel.addEventListener('mousemove', (e) => {
+                        const bounds = imageWrap.getBoundingClientRect();
+                        const mouseX = e.clientX - bounds.left;
+                        const mouseY = e.clientY - bounds.top;
+                        const xPct = (mouseX / bounds.width) - 0.5;
+                        const yPct = (mouseY / bounds.height) - 0.5;
+                        
+                        gsap.to(img, {
+                            rotationY: xPct * 10,
+                            rotationX: -yPct * 10,
+                            duration: 0.5,
+                            ease: "power1.out",
+                            transformPerspective: 1000
+                        });
+                    });
+                    
+                    panel.addEventListener('mouseleave', () => {
+                        gsap.to(img, {
+                            rotationY: 0,
+                            rotationX: 0,
+                            duration: 0.5,
+                            ease: "power1.out"
+                        });
+                    });
+                }
             });
-
-            // 3D Gallery Logic
-            const setupGallery = (triggerId, galleryId, mainImgId) => {
-                const trigger = document.getElementById(triggerId);
-                const galleryPanes = gsap.utils.toArray(`#${galleryId} .gallery-pane`);
-                const mainImg = document.getElementById(mainImgId);
-                if (!trigger || !mainImg) return;
-
-                let isHovered = false;
-                let currentRotation = 0;
-                let focusedElement = null;
-                const radius = 450;
-                const centerZ = 350;
-
-                const updateGallery = (instant = false) => {
-                    if (focusedElement) return;
-                    galleryPanes.forEach((pane, i) => {
-                        const angle = (i * (360 / galleryPanes.length)) + currentRotation;
-                        const radian = (angle * Math.PI) / 180;
-                        const x = Math.sin(radian) * radius;
-                        const z = Math.cos(radian) * radius + centerZ;
-                        gsap.to(pane, { x, z, rotationY: angle, opacity: (isHovered ? (z > centerZ ? 1 : 0.4) : 0), duration: instant ? 0 : 0.8, ease: "power3.out" });
-                    });
-                };
-
-                const resetFocus = () => {
-                    if (!focusedElement) return;
-                    focusedElement.classList.remove('focused');
-                    focusedElement = null;
-                    updateGallery();
-                    gsap.to(mainImg, { opacity: 0.3, duration: 0.5 });
-                };
-
-                galleryPanes.forEach(pane => {
-                    pane.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (focusedElement === pane) { resetFocus(); return; }
-                        if (focusedElement) focusedElement.classList.remove('focused');
-                        focusedElement = pane;
-                        pane.classList.add('focused');
-                        gsap.to(pane, { x: 0, y: 0, z: 800, rotationY: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
-                        galleryPanes.forEach(p => { if (p !== pane) gsap.to(p, { opacity: 0, duration: 0.4 }); });
-                    });
-                });
-
-                trigger.addEventListener('mouseenter', () => { isHovered = true; gsap.to(mainImg, { scale: 0.7, opacity: 0.3, duration: 0.8, ease: "power3.inOut" }); updateGallery(); });
-                trigger.addEventListener('mouseleave', () => { if (focusedElement) return; isHovered = false; gsap.to(mainImg, { scale: 1, opacity: 1, duration: 0.8, ease: "power3.inOut" }); updateGallery(); });
-                trigger.addEventListener('wheel', (e) => { if (!isHovered || focusedElement) return; e.preventDefault(); currentRotation += e.deltaY * 0.1; updateGallery(); }, { passive: false });
-            };
-
-            setupGallery('trigger-01', 'gallery-01', 'img-01');
-            setupGallery('trigger-02', 'gallery-02', 'img-02');
-            setupGallery('trigger-03', 'gallery-03', 'img-03');
-            setupGallery('trigger-04', 'gallery-04', 'img-04');
         };
 
         // --- ARCHIVE GRID SECTION LOGIC ---
